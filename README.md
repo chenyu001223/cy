@@ -15,3 +15,20 @@ This study successfully developed an improved artificial learner algorithm-optim
 Model:
 
 ![image](https://github.com/chenyu001223/cy/blob/main/model.jpg)
+
+# Related Files
+
+| File Name | Description | 
+|---------|---------|
+| IALA_LNN.m   | Main program: IALA-optimized LNN   |
+| IALA.m   | Improved Artificial Lampyridae Algorithm   |
+| Goodnode.m     | Goodnode initialization method   |
+|  sdata.mat   | Processed SCX data (dimension-reduced)   |
+|  hdata.mat   | Processed HILIC data (dimension-reduced)   |
+|  rdata.mat   | Processed RP data (dimension-reduced)  |
+|  snet.mat     | Trained model weights for SCX   |
+|  hnet.mat     | Trained model weights for HILIC   |
+|  rnet.mat     | Trained model weights for RP   |
+| SCX.txt   | Original SCX    |
+| HILIC.txt   | Original HILIC    |
+| RP.txt   | Original RP    |
