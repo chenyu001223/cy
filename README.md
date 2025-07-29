@@ -32,3 +32,25 @@ Model:
 | SCX.txt   | Original SCX    |
 | HILIC.txt   | Original HILIC    |
 | RP.txt   | Original RP    |
+
+# Requirements
+
+MATLAB>=R2019b
+Statistics and Machine Learning Toolbox
+Optimization Toolbox 
+Signal Processing Toolbox 
+
+# How to use
+
+1. quick Start - using pre-trained models
+
+```matlab
+TYPE = 0;  % Use pre-trained model
+IALA_LNN   % Run main program
+```
+
+2. Training from Scratch
+```matlab
+TYPE = 1;
+IALA_LNN   % Run main program
+```
