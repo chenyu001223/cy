@@ -20,6 +20,10 @@ Peptide retention time (RT) prediction is essential for liquid chromatography-ma
 
 Our IALA-optimized LNN achieves state-of-the-art performance across all three chromatographic types, with R² values exceeding 0.93 and significantly reduced prediction errors compared to traditional methods.
 
+Model:  
+
+![](model.jpg)
+
 ## Repository Structure
 
 ```
@@ -80,88 +84,4 @@ load('rdata.mat')  % For RP
 IALA_LNN
 ```
 
-### Using Pre-trained Models
 
-To use existing trained models:
-
-```matlab
-% Set inference mode
-TYPE = 0;  % Use pre-trained weights
-
-% The program will automatically load corresponding weights:
-% rdata.mat → rnet.mat
-% sdata.mat → snet.mat
-% hdata.mat → hnet.mat
-```
-
-## Model Performance
-
-| Chromatography | Dataset | R² | MAE (min) | RMSE (min) | Δt95 (min) |
-|----------------|---------|-----|-----------|------------|------------|
-| RP | rdata | 0.XXX | X.XX | X.XX | X.XX |
-| SCX | sdata | 0.XXX | X.XX | X.XX | X.XX |
-| HILIC | hdata | 0.XXX | X.XX | X.XX | X.XX |
-
-## IALA Hyperparameter Optimization
-
-The IALA algorithm optimizes three critical LNN hyperparameters:
-
-| Parameter | Search Range | Description |
-|-----------|--------------|-------------|
-| Epochs | [50, 300] | Number of training iterations |
-| Batch Size | [8, 64] | Mini-batch size for training |
-| Learning Rate | [0.001, 0.05] | Step size for weight updates |
-
-## Output
-
-The program generates:
-- Performance metrics (RMSE, MAE, R², Δt95)
-- Scatter plot of predicted vs. observed retention times
-- Results are saved in `./results/` directory with timestamp
-
-## Data Format
-
-### Input Data (Original)
-- `data/RP.mat`, `data/SCX.mat`, `data/HILIC.mat`
-- Contains peptide sequences and corresponding retention times
-
-### Processed Data
-- `main/rdata.mat`, `main/sdata.mat`, `main/hdata.mat`
-- Dimension-reduced features ready for LNN training
-- Preprocessed using sliding window approach
-
-### Model Weights
-- `main/rnet.mat`, `main/snet.mat`, `main/hnet.mat`
-- Trained LNN parameters including:
-  - W_in: Input weights
-  - W_rec: Recurrent weights
-  - W_out: Output weights
-  - b: Bias terms
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@article{iala_lnn_2025,
-  title={Peptide Retention Time Prediction using IALA-Optimized Liquid Neural Networks},
-  author={Your Name},
-  journal={Journal Name},
-  year={2025}
-}
-```
-
-## License
-
-This project is licensed under the MIT License.
-
-## Contact
-
-For questions and support, please contact: [your.email@example.com]
-```
-
-直接复制上面的内容，粘贴到GitHub仓库的README.md文件中即可。记得替换：
-- XXX → 您的实际实验结果
-- Your Name → 您的名字
-- Journal Name → 您投稿的期刊
-- [your.email@example.com] → 您的邮箱
