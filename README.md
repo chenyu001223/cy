@@ -1,4 +1,3 @@
-```markdown
 # IALA-LNN
 
 IALA-LNN: An Improved Artificial Lampyridae Algorithm Optimized Liquid Neural Network for Peptide Retention Time Prediction
