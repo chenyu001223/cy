@@ -18,19 +18,19 @@ Y_train = Y_norm(1:n_train);
 X_test = X_norm(n_train+1:end, :);
 Y_test = Y_norm(n_train+1:end);
 
-fprintf('=== 数据集划分信息 ===\n');
-fprintf('原始数据总量: %d 个样本\n', size(X, 1));
-fprintf('训练集数量: %d 个样本\n', size(X_train, 1));
-fprintf('测试集数量: %d 个样本\n', size(X_test, 1));
-fprintf('训练集占比: %.1f%%\n', size(X_train, 1)/size(X, 1)*100);
-fprintf('测试集占比: %.1f%%\n', size(X_test, 1)/size(X, 1)*100);
-fprintf('\n=== 数据集形状信息 ===\n');
-fprintf('X_train 形状: [%d, %d]\n', size(X_train, 1), size(X_train, 2));
-fprintf('Y_train 形状: [%d, %d]\n', size(Y_train, 1), size(Y_train, 2));
-fprintf('X_test 形状: [%d, %d]\n', size(X_test, 1), size(X_test, 2));
-fprintf('Y_test 形状: [%d, %d]\n', size(Y_test, 1), size(Y_test, 2));
-fprintf('输入窗口长度: %d\n', input_window);
-fprintf('预测时间跨度: %d\n', predict_horizon);
+fprintf('=== Dataset Split Information ===\n');
+fprintf('Total original data: %d samples\n', size(X, 1));
+fprintf('Training set size: %d samples\n', size(X_train, 1));
+fprintf('Test set size: %d samples\n', size(X_test, 1));
+fprintf('Training set ratio: %.1f%%\n', size(X_train, 1)/size(X, 1)*100);
+fprintf('Test set ratio: %.1f%%\n', size(X_test, 1)/size(X, 1)*100);
+fprintf('\n=== Dataset Shape Information ===\n');
+fprintf('X_train shape: [%d, %d]\n', size(X_train, 1), size(X_train, 2));
+fprintf('Y_train shape: [%d, %d]\n', size(Y_train, 1), size(Y_train, 2));
+fprintf('X_test shape: [%d, %d]\n', size(X_test, 1), size(X_test, 2));
+fprintf('Y_test shape: [%d, %d]\n', size(Y_test, 1), size(Y_test, 2));
+fprintf('Input window length: %d\n', input_window);
+fprintf('Prediction time horizon: %d\n', predict_horizon);
 fprintf('================================\n\n');
 
 params.hidden_size = 20;
@@ -61,11 +61,11 @@ if TYPE==1
     num_epochs = round(best_params(1));
     batch_size = round(best_params(2));
     learning_rate = best_params(3);
-    fprintf('\n=== IALA优化完成 ===\n');
-    fprintf('最优超参数组合:\n');
-    fprintf('  训练轮数: %d\n', num_epochs);
-    fprintf('  批次大小: %d\n', batch_size);
-    fprintf('  学习率: %.6f\n', learning_rate);
+    fprintf('\n=== IALA Optimization Completed ===\n');
+    fprintf('Optimal hyperparameter combination:\n');
+    fprintf('  Number of epochs: %d\n', num_epochs);
+    fprintf('  Batch size: %d\n', batch_size);
+    fprintf('  Learning rate: %.6f\n', learning_rate);
     fprintf('==================\n\n');
 else
     num_epochs = 100;
@@ -84,13 +84,13 @@ Y_tr = Y_train(train_idx);
 X_val = X_train(val_idx, :);
 Y_val = Y_train(val_idx);
 
-fprintf('=== 训练/验证集划分信息 ===\n');
-fprintf('实际训练集数量: %d 个样本 (占原训练集的 %.1f%%)\n', size(X_tr, 1), size(X_tr, 1)/size(X_train, 1)*100);
-fprintf('验证集数量: %d 个样本 (占原训练集的 %.1f%%)\n', size(X_val, 1), size(X_val, 1)/size(X_train, 1)*100);
-fprintf('X_tr 形状: [%d, %d]\n', size(X_tr, 1), size(X_tr, 2));
-fprintf('Y_tr 形状: [%d, %d]\n', size(Y_tr, 1), size(Y_tr, 2));
-fprintf('X_val 形状: [%d, %d]\n', size(X_val, 1), size(X_val, 2));
-fprintf('Y_val 形状: [%d, %d]\n', size(Y_val, 1), size(Y_val, 2));
+fprintf('=== Train/Validation Split Information ===\n');
+fprintf('Actual training set size: %d samples (%.1f%% of original training set)\n', size(X_tr, 1), size(X_tr, 1)/size(X_train, 1)*100);
+fprintf('Validation set size: %d samples (%.1f%% of original training set)\n', size(X_val, 1), size(X_val, 1)/size(X_train, 1)*100);
+fprintf('X_tr shape: [%d, %d]\n', size(X_tr, 1), size(X_tr, 2));
+fprintf('Y_tr shape: [%d, %d]\n', size(Y_tr, 1), size(Y_tr, 2));
+fprintf('X_val shape: [%d, %d]\n', size(X_val, 1), size(X_val, 2));
+fprintf('Y_val shape: [%d, %d]\n', size(Y_val, 1), size(Y_val, 2));
 fprintf('================================\n\n');
 
 v_W_in = zeros(size(params.W_in));
@@ -176,7 +176,7 @@ if TYPE==1
     title('Training vs Validation Loss','FontSize',14,'FontWeight','bold');
     grid on;
     saveas(gcf,'./results/loss_curve.png');
-    fprintf('训练/验证 Loss 曲线已保存: ./results/loss_curve.png\n');
+    fprintf('Train/Validation Loss curve saved: ./results/loss_curve.png\n');
 
 
 
@@ -208,20 +208,20 @@ if TYPE==1
 
         filename = sprintf('./results/loss_curve_segment_%d_%d.png', start_idx, end_idx);
         saveas(gcf, filename);
-        fprintf('Loss 曲线已保存: %s\n', filename);
+        fprintf('Loss curve saved: %s\n', filename);
     end
 
-    fprintf('\n=== 保存最佳模型 ===\n');
-    fprintf('最佳验证损失: %.6f\n', best_val_loss);
-    fprintf('最佳验证RMSE: %.6f\n', sqrt(best_val_loss));
+    fprintf('\n=== Saving Best Model ===\n');
+    fprintf('Best validation loss: %.6f\n', best_val_loss);
+    fprintf('Best validation RMSE: %.6f\n', sqrt(best_val_loss));
     save('best_model.mat', 'params', 'num_epochs', 'batch_size', 'learning_rate', ...
         'best_val_loss', 'x_mu', 'x_sigma', 'y_mu', 'y_sigma', 'loss_history');
-    fprintf('最佳模型已保存到 best_model.mat\n');
-    fprintf('包含内容:\n');
-    fprintf('  - params: 模型权重和偏置\n');
-    fprintf('  - 超参数: num_epochs, batch_size, learning_rate\n');
-    fprintf('  - 预处理参数: x_mu, x_sigma, y_mu, y_sigma\n');
-    fprintf('  - 训练历史: best_val_loss, loss_history\n');
+    fprintf('Best model saved to best_model.mat\n');
+    fprintf('Contents include:\n');
+    fprintf('  - params: model weights and biases\n');
+    fprintf('  - Hyperparameters: num_epochs, batch_size, learning_rate\n');
+    fprintf('  - Preprocessing parameters: x_mu, x_sigma, y_mu, y_sigma\n');
+    fprintf('  - Training history: best_val_loss, loss_history\n');
     fprintf('===================\n\n');
 else
     load best_model.mat
@@ -248,14 +248,14 @@ n = length(sorted_errors);
 index_95 = ceil(0.95 * n);
 delta_t95 = sorted_errors(index_95);
 
-fprintf('\n=== 测试结果评价指标 ===\n');
+fprintf('\n=== Test Results Evaluation Metrics ===\n');
 fprintf('RMSE = %.3f\n', rmse);
 fprintf('MAE = %.3f\n', mae);
 fprintf('R² = %.3f\n', R2);
 fprintf('Δt95 = %.3f\n', delta_t95);
 fprintf('=======================\n');
 
-fprintf('\n=== 生成预测结果散点图 ===\n');
+fprintf('\n=== Generating Prediction Results Scatter Plot ===\n');
 figure('Position', [100, 100, 800, 700]);
 scatter(Y_real, Y_pred, 30, [0.3, 0.6, 0.9], 'filled', 'MarkerFaceAlpha', 0.8, 'MarkerEdgeColor', [0.2, 0.4, 0.7], 'MarkerEdgeAlpha', 0.6);
 hold on;
@@ -286,11 +286,11 @@ timestamp = datestr(now, 'yyyymmdd_HHMMSS');
 filename = [save_dir, 'RT_scatter_', timestamp, '.png'];
 set(gcf, 'PaperPositionMode', 'auto');
 print(gcf, filename, '-dpng', '-r300');
-fprintf('高质量散点图已保存为: %s\n', filename);
+fprintf('High-quality scatter plot saved as: %s\n', filename);
 fprintf('=========================\n');
 
 
-fprintf('\n=== 生成预测结果折线对比图 ===\n');
+fprintf('\n=== Generating Prediction Results Line Comparison Plot ===\n');
 figure('Position', [100, 100, 800, 700]);
 
 
@@ -336,7 +336,7 @@ timestamp = datestr(now, 'yyyymmdd_HHMMSS');
 filename = [save_dir, 'RT_line_', timestamp, '.png'];
 set(gcf, 'PaperPositionMode', 'auto');
 print(gcf, filename, '-dpng', '-r300');
-fprintf('高质量折线对比图已保存为: %s\n', filename);
+fprintf('High-quality line comparison plot saved as: %s\n', filename);
 fprintf('=========================\n');
 
 
@@ -389,8 +389,8 @@ if isempty(eval_count)
     eval_count = 0;
 end
 eval_count = eval_count + 1;
-fprintf('=== 第%d次超参数评估 ===\n', eval_count);
-fprintf('参数: 轮数=%d, 批次=%d, 学习率=%.6f\n', num_epochs, batch_size, learning_rate);
+fprintf('=== Hyperparameter Evaluation #%d ===\n', eval_count);
+fprintf('Parameters: epochs=%d, batch=%d, learning_rate=%.6f\n', num_epochs, batch_size, learning_rate);
 val_split = 0.2;
 val_idx = randperm(size(X_train, 1), floor(val_split * size(X_train, 1)));
 train_idx = setdiff(1:size(X_train, 1), val_idx);
@@ -452,7 +452,7 @@ for epoch = 1:num_epochs
         val_loss = val_loss + (pred(end) - Y_val(i))^2;
     end
     val_loss = val_loss / size(X_val, 1);
-    fprintf('Validation Loss: %.6f (评估%d-轮次%d)\n', val_loss, eval_count, epoch);
+    fprintf('Validation Loss: %.6f (Eval #%d - Epoch %d)\n', val_loss, eval_count, epoch);
     if val_loss < best_val_loss
         best_val_loss = val_loss;
         no_improve_count = 0;

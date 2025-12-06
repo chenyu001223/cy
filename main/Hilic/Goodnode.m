@@ -17,6 +17,6 @@ GD = tmp1.*tmp2;
 GD = mod(GD,1);
 %% For debuging
 %plot(GD(:,1),GD(:,2),'*');
-%title("goodnode初始化种群")
+%title("goodnode initialization population")
 
 end

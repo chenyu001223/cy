@@ -166,17 +166,17 @@ o=step;
 end
 
 function grad = calculate_gradient(x, fobj)
-    epsilon = 1e-6; %微小偏移量
+    epsilon = 1e-6; %Small offset
     grad = zeros(size(x));
     for i = 1:length(x)
-        %计算偏导数的分母
+        % Calculate the denominator of partial derivatives
         x_plus = x;
         x_plus(i) = x_plus(i) + epsilon;
         
         x_minus = x;
         x_minus(i) = x_minus(i) - epsilon;
         
-        %计算中心差分的偏导数
+        % Calculate partial derivatives using central difference
         grad(i) = (fobj(x_plus) - fobj(x_minus)) / (2 * epsilon);
     end
 end
