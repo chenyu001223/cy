@@ -1,8 +1,8 @@
 clear; clc; close all;
 %
-%SCX 数据集预测结果
+% SCX dataset prediction results
 %
-%-------------------- 1. 数据预处理 --------------------
+%-------------------- 1. Data Preprocessing --------------------
 
 load sdata.mat
 input_window = 1;
@@ -22,18 +22,18 @@ Y_train = Y_norm(1:n_train);
 X_test = X_norm(n_train+1:end, :);
 Y_test = Y_norm(n_train+1:end);
 
-params.hidden_size = 20;           % 隐层单元数为20
-params.output_size = 1;            % 输出维度为1
-params.tau = 2.0;                  % 时间常数tau控制动态响应
-input_dim = input_window;          % 输入维度等于滑动窗口长度
+params.hidden_size = 20;           % Number of hidden units is 20
+params.output_size = 1;            % Output dimension is 1
+params.tau = 2.0;                  % Time constant tau controls dynamic response
+input_dim = input_window;          % Input dimension equals sliding window length
 
-% 初始化权重矩阵和偏置项
-params.W_in = randn(params.hidden_size, 1) * 0.1;           % 输入权重 (每个时间步共享)
-params.W_rec = randn(params.hidden_size, params.hidden_size) * 0.1; % 隐层循环连接权重
-params.W_out = randn(params.output_size, params.hidden_size) * 0.1; % 输出层权重
-params.b = zeros(params.hidden_size, 1);                    % 偏置初始化为0
+% Initialize weight matrices and bias terms
+params.W_in = randn(params.hidden_size, 1) * 0.1;          % Input weights (shared across time steps)
+params.W_rec = randn(params.hidden_size, params.hidden_size) * 0.1; % Hidden layer recurrent connection weights
+params.W_out = randn(params.output_size, params.hidden_size) * 0.1; % Output layer weights
+params.b = zeros(params.hidden_size, 1);                    % Bias initialized to 0
 
-%-------------------- 2. IALA 参数设置 --------------------
+%-------------------- 2. IALA Parameter Settings --------------------
 SearchAgents_no = 100;
 Max_iter = 100;
 dim = 3;
@@ -59,10 +59,10 @@ else
     learning_rate =0.01578;
 end
 
-momentum = 0.9;           % 动量因子
-patience = 10;            % 早停容忍轮数
+momentum = 0.9;          % Momentum factor
+patience = 10;           % Early stopping patience epochs
 
-% 验证集划分（20%的训练集用于验证）
+% Validation set split (20% of training set used for validation)
 val_split = 0.2;
 val_idx = randperm(size(X_train, 1), floor(val_split * size(X_train, 1)));
 train_idx = setdiff(1:size(X_train, 1), val_idx);
@@ -71,68 +71,68 @@ Y_tr = Y_train(train_idx);
 X_val = X_train(val_idx, :);
 Y_val = Y_train(val_idx);
 
-% 初始化动量变量
+% Initialize momentum variables
 v_W_in = zeros(size(params.W_in));
 v_W_rec = zeros(size(params.W_rec));
 v_W_out = zeros(size(params.W_out));
 v_b = zeros(size(params.b));
 
-best_val_loss = inf;         % 最优验证损失初始化为无穷
-no_improve_count = 0;        % 连续未提升计数
-loss_history = zeros(num_epochs, 1);  % 存储每轮验证损失
+best_val_loss = inf;         % Best validation loss initialized to infinity
+no_improve_count = 0;        % Counter for consecutive epochs without improvement
+loss_history = zeros(num_epochs, 1);  % Store validation loss for each epoch
 if TYPE==1
     for epoch = 1:num_epochs
-        idx = randperm(size(X_tr, 1));  % 打乱训练样本
+        idx = randperm(size(X_tr, 1));  % Shuffle training samples
         for i = 1:batch_size:size(X_tr, 1)
-            batch_idx = idx(i:min(i+batch_size-1, end));       % 获取每个小批次索引
-            X_batch = X_tr(batch_idx, :);                      % 当前批次输入
-            Y_batch = Y_tr(batch_idx);                         % 当前批次输出
+            batch_idx = idx(i:min(i+batch_size-1, end));       % Get indices for each mini-batch
+            X_batch = X_tr(batch_idx, :);                      % Current batch input
+            Y_batch = Y_tr(batch_idx);                        % Current batch output
 
-            % 初始化梯度
+            % Initialize gradients
             grad_W_in = zeros(size(params.W_in));
             grad_W_rec = zeros(size(params.W_rec));
             grad_W_out = zeros(size(params.W_out));
             grad_b = zeros(size(params.b));
 
-            % 批处理中每个样本的梯度累加
+            % Accumulate gradients for each sample in the batch
             for j = 1:length(batch_idx)
                 x_seq = X_batch(j, :);
                 y_true = Y_batch(j);
 
-                % 前向传播 (保存中间状态)
+                % Forward propagation (save intermediate states)
                 [outputs, h, net] = simpleLNN_train(x_seq, params);
                 y_pred = outputs(end);
 
-                % 反向传播 (BPTT)
+                % Backpropagation (BPTT)
                 grads = bptt(x_seq, y_true, params, outputs, h, net);
 
-                % 累加梯度
+                % Accumulate gradients
                 grad_W_in = grad_W_in + grads.W_in;
                 grad_W_rec = grad_W_rec + grads.W_rec;
                 grad_W_out = grad_W_out + grads.W_out;
                 grad_b = grad_b + grads.b;
             end
 
-            % 平均梯度
+            % Average gradients
             grad_W_in = grad_W_in / length(batch_idx);
             grad_W_rec = grad_W_rec / length(batch_idx);
             grad_W_out = grad_W_out / length(batch_idx);
             grad_b = grad_b / length(batch_idx);
 
-            % 动量更新
+            % Momentum update
             v_W_in = momentum * v_W_in - learning_rate * grad_W_in;
             v_W_rec = momentum * v_W_rec - learning_rate * grad_W_rec;
             v_W_out = momentum * v_W_out - learning_rate * grad_W_out;
             v_b = momentum * v_b - learning_rate * grad_b;
 
-            % 更新权重
+           % Update weights
             params.W_in = params.W_in + v_W_in;
             params.W_rec = params.W_rec + v_W_rec;
             params.W_out = params.W_out + v_W_out;
             params.b = params.b + v_b;
         end
 
-        % 计算验证损失
+        % Calculate validation loss
         val_loss = 0;
         for i = 1:size(X_val, 1)
             pred = simpleLNN(X_val(i,:), params);
@@ -140,9 +140,9 @@ if TYPE==1
         end
         val_loss = val_loss / size(X_val, 1);
         loss_history(epoch) = val_loss;
-        fprintf("Epoch %d | Val Loss: %.6f\n", epoch, val_loss); % 打印验证损失
+        fprintf("Epoch %d | Val Loss: %.6f\n", epoch, val_loss); % Print validation loss
 
-        % 早停检查
+        % Early stopping check
         if val_loss < best_val_loss
             best_val_loss = val_loss;
             best_params = params;
@@ -162,36 +162,36 @@ end
 Y_pred_norm = zeros(size(Y_test));
 for i = 1:size(X_test, 1)
     out = simpleLNN(X_test(i, :), params);
-    Y_pred_norm(i) = out(end);  % 取最后一个时刻的预测输出
+    Y_pred_norm(i) = out(end);  
 end
 
-% 反归一化处理
+% Denormalization
 Y_pred = Y_pred_norm * y_sigma + y_mu;
 Y_real = Y_test * y_sigma + y_mu;
 
-% 计算评价指标
-errors = Y_pred - Y_real;  % 预测误差
-abs_errors = abs(errors);  % 绝对误差
+% Calculate evaluation metrics
+errors = Y_pred - Y_real;  % Prediction errors
+abs_errors = abs(errors);  % Absolute errors
 
-% 1. 均方根误差 (RMSE)
+% 1. Root Mean Square Error (RMSE)
 rmse = sqrt(mean(errors.^2));
 
-% 2. 平均绝对误差 (MAE)
+% 2. Mean Absolute Error (MAE)
 mae = mean(abs_errors);
 
-% 3. 决定系数 (R²)
-SS_res = sum(errors.^2);  % 残差平方和
-SS_tot = sum((Y_real - mean(Y_real)).^2);  % 总平方和
+% 3. Coefficient of Determination (R²)
+SS_res = sum(errors.^2);  % Residual sum of squares
+SS_tot = sum((Y_real - mean(Y_real)).^2);  % Total sum of squares
 R2 = 1 - (SS_res / SS_tot);
 
-% 4. Δt95指标 (95%误差范围)
-sorted_errors = sort(abs_errors);  % 排序绝对误差
+% 4. Δt95 metric (95% error range)
+sorted_errors = sort(abs_errors);  % Sort absolute errors
 n = length(sorted_errors);
-index_95 = ceil(0.95 * n);  % 95%位置
-delta_t95 = sorted_errors(index_95);  % Δt95值
+index_95 = ceil(0.95 * n);  % 95% position
+delta_t95 = sorted_errors(index_95);  % Δt95 value
 
-% 输出所有评价指标
-fprintf('测试结果评价指标:\n');
+% Output all evaluation metrics
+fprintf('Test Results Evaluation Metrics:\n');
 fprintf('RMSE = %.3f\n', rmse);
 fprintf('MAE = %.3f\n', mae);
 fprintf('R² = %.3f\n', R2);
@@ -199,13 +199,13 @@ fprintf('Δt95 = %.3f\n', delta_t95);
 
 
 function [outputs, h, net] = simpleLNN_train(x_seq, params)
-T = length(x_seq);                             % 输入序列长度
-h = zeros(params.hidden_size, T+1);            % 隐状态 (包括h0)
-net = zeros(params.hidden_size, T);            % 存储net值
-outputs = zeros(T, params.output_size);        % 存储每一步的输出
+T = length(x_seq);                             % Input sequence length
+h = zeros(params.hidden_size, T+1);            % Hidden states (including h0)
+net = zeros(params.hidden_size, T);           % Store net values
+outputs = zeros(T, params.output_size);         % Store outputs at each step
 
 for t = 1:T
-    % LNN核心状态更新
+% LNN core state update
     net(:,t) = params.W_in * x_seq(t) + params.W_rec * h(:,t) + params.b;
     h(:,t+1) = h(:,t) + (-h(:,t) + tanh(net(:,t))) / params.tau;
     outputs(t,:) = (params.W_out * h(:,t+1))';
@@ -213,53 +213,53 @@ end
 end
 
 function outputs = simpleLNN(x_seq, params)
-T = length(x_seq);                             % 输入序列长度
-h = zeros(params.hidden_size, 1);              % 隐状态初始化为0
-outputs = zeros(T, 1);                         % 存储输出
+T = length(x_seq);                             % Input sequence length
+h = zeros(params.hidden_size, 1);              % Hidden state initialized to 0
+outputs = zeros(T, 1);                          % Store outputs
 
 for t = 1:T
-    % 状态更新
+    % State update
     net = params.W_in * x_seq(t) + params.W_rec * h + params.b;
     h = h + (-h + tanh(net)) / params.tau;
     outputs(t) = params.W_out * h;
 end
 end
 
-% BPTT 反向传播函数
+% BPTT backpropagation function
 function grads = bptt(x_seq, y_true, params, outputs, h, net)
-T = length(x_seq);  % 序列长度
+T = length(x_seq);  % Sequence length
 grads = struct(...
     'W_in', zeros(size(params.W_in)), ...
     'W_rec', zeros(size(params.W_rec)), ...
     'W_out', zeros(size(params.W_out)), ...
     'b', zeros(size(params.b)));
 
-% 输出层梯度 (只关心最后时间步)
+% Output layer gradient (only care about the last time step)
 dL_do = 2 * (outputs(end) - y_true);
-grads.W_out = dL_do * h(:, end)';  % h(:,end)对应h_{T+1}
+grads.W_out = dL_do * h(:, end)';  % h(:,end) corresponds to h_{T+1}
 
-% 初始化反向传播变量
-dh_next = params.W_out' * dL_do;  % 从输出层反向传播的梯度
+% Initialize backpropagation variables
+dh_next = params.W_out' * dL_do;  % Gradient backpropagated from output layer
 
-% 沿时间步反向传播
+% Backpropagate along time steps
 for t = T:-1:1
-    % 计算当前时间步的梯度
+    % Calculate gradient at current time step
     dnet = (1/params.tau) * (1 - tanh(net(:,t)).^2) .* dh_next;
 
-    % 参数梯度累积
+    % Accumulate parameter gradients
     grads.W_in = grads.W_in + dnet * x_seq(t);
     grads.W_rec = grads.W_rec + dnet * h(:,t)';
     grads.b = grads.b + dnet;
 
-    % 计算前一时间步的隐状态梯度
+    % Calculate hidden state gradient for previous time step
     dh_prev = (1 - 1/params.tau) * dh_next + params.W_rec' * dnet;
 
-    % 更新下一时间步的梯度
+    % Update gradient for next time step
     dh_next = dh_prev;
 end
 end
 
-%-------------------- 4. 子函数定义 --------------------
+%-------------------- 4. Subfunction Definitions --------------------
 function rmse = LNN_RMSE_Eval(num_epochs, batch_size, learning_rate, X_train, Y_train)
 val_split = 0.2;
 val_idx = randperm(size(X_train, 1), floor(val_split * size(X_train, 1)));
@@ -332,7 +332,7 @@ for epoch = 1:num_epochs
         val_loss = val_loss + (pred(end) - Y_val(i))^2;
     end
     val_loss = val_loss / size(X_val, 1);
-    fprintf('Validation Loss: %.6f\n', val_loss); % 打印验证损失
+    fprintf('Validation Loss: %.6f\n', val_loss); % Print validation loss
 
     if val_loss < best_val_loss
         best_val_loss = val_loss;
